@@ -75,8 +75,8 @@ contract VerifyVideo is Ownable {
         
     }
     
-    function uploadVideoData (uint256 _name, uint256 _videoHash) public /*onlyOwner*/ {
-        // require(nameToVideo[_name] == 0);  //In real contract It is necessary to create unique data, but for debug I delete
+    function uploadVideoData (uint256 _name, uint256 _videoHash) public onlyOwner {
+        require(nameToVideo[_name].name == 0);  //In real contract It is necessary to create unique data, but for debug I delete
 
         nameToVideo[_name] = Video(_name, _videoHash);
         videoList.push(nameToVideo[_name]);
