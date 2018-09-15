@@ -13,6 +13,7 @@ var app = express();
 // view engine setup
 app.set('views', path.join(__dirname, 'views'));
 app.set('view engine', 'jade');
+app.set('json spaces', 100);
 
 app.use(logger('dev'));
 app.use(express.json());
@@ -72,7 +73,6 @@ app.get("/uploadVideoData", function(req,res) {
 	var fileHash = req.query.hash;
 	var proofContract = new web3.eth.Contract([ 	{ 		"constant": false, 		"inputs": [ 			{ 				"name": "_name", 				"type": "uint256" 			}, 			{ 				"name": "_videoHash", 				"type": "uint256" 			} 		], 		"name": "uploadVideoData", 		"outputs": [], 		"payable": false, 		"stateMutability": "nonpayable", 		"type": "function" 	}, 	{ 		"constant": true, 		"inputs": [ 			{ 				"name": "_name", 				"type": "uint256" 			}, 			{ 				"name": "_hashToCompare", 				"type": "uint256" 			} 		], 		"name": "compareVideoData", 		"outputs": [ 			{ 				"name": "", 				"type": "bool" 			} 		], 		"payable": false, 		"stateMutability": "view", 		"type": "function" 	}, 	{ 		"constant": false, 		"inputs": [], 		"name": "renounceOwnership", 		"outputs": [], 		"payable": false, 		"stateMutability": "nonpayable", 		"type": "function" 	}, 	{ 		"constant": true, 		"inputs": [ 			{ 				"name": "", 				"type": "uint256" 			} 		], 		"name": "nameToVideo", 		"outputs": [ 			{ 				"name": "name", 				"type": "uint256" 			}, 			{ 				"name": "videoHash", 				"type": "uint256" 			} 		], 		"payable": false, 		"stateMutability": "view", 		"type": "function" 	}, 	{ 		"constant": true, 		"inputs": [], 		"name": "owner", 		"outputs": [ 			{ 				"name": "", 				"type": "address" 			} 		], 		"payable": false, 		"stateMutability": "view", 		"type": "function" 	}, 	{ 		"constant": true, 		"inputs": [ 			{ 				"name": "", 				"type": "uint256" 			} 		], 		"name": "videoList", 		"outputs": [ 			{ 				"name": "name", 				"type": "uint256" 			}, 			{ 				"name": "videoHash", 				"type": "uint256" 			} 		], 		"payable": false, 		"stateMutability": "view", 		"type": "function" 	}, 	{ 		"constant": true, 		"inputs": [ 			{ 				"name": "_name", 				"type": "uint256" 			} 		], 		"name": "getVideoData", 		"outputs": [ 			{ 				"name": "", 				"type": "uint256" 			} 		], 		"payable": false, 		"stateMutability": "view", 		"type": "function" 	}, 	{ 		"constant": false, 		"inputs": [ 			{ 				"name": "_newOwner", 				"type": "address" 			} 		], 		"name": "transferOwnership", 		"outputs": [], 		"payable": false, 		"stateMutability": "nonpayable", 		"type": "function" 	}, 	{ 		"inputs": [], 		"payable": false, 		"stateMutability": "nonpayable", 		"type": "constructor" 	}, 	{ 		"anonymous": false, 		"inputs": [ 			{ 				"indexed": true, 				"name": "previousOwner", 				"type": "address" 			} 		], 		"name": "OwnershipRenounced", 		"type": "event" 	}, 	{ 		"anonymous": false, 		"inputs": [ 			{ 				"indexed": true, 				"name": "previousOwner", 				"type": "address" 			}, 			{ 				"indexed": true, 				"name": "newOwner", 				"type": "address" 			} 		], 		"name": "OwnershipTransferred", 		"type": "event" 	} ]
 		, "0x20c556EDE272C51907526628F2EEF5F35257865C");
-	res.send(proofContract.methods.owner.call().call().then(console.log));
 	proofContract.methods.uploadVideoData(fileName, fileHash).send({from: "0x68982f7EaE5C54697c2A7Ae4a4434F6E154e270f", gas: 1200000}).then(function(receipt) {
 		var blockHash = receipt.blockHash;
 		var blockNumber = receipt.blockNumber;
@@ -81,10 +81,16 @@ app.get("/uploadVideoData", function(req,res) {
 		var status = receipt.status;
 		var to = receipt.to;
 		var transactionHash = receipt.transactionHash;
-		var transactions = [{
+		res.json({
 			"blockHash": blockHash,
-		}];
-		
+			"blockNumber": blockNumber,
+			"from": from,
+			"gasUsed": gasUsed,
+			"status": status,
+			"to": to,
+			"transactionHash": transactionHash,
+		});
+
 	});
 })
 
@@ -100,7 +106,19 @@ app.get("/compareVideoData", function(req,res) {
 	var comparehash = req.query.hash;
 	var proofContract = new web3.eth.Contract([ 	{ 		"constant": false, 		"inputs": [ 			{ 				"name": "_name", 				"type": "uint256" 			}, 			{ 				"name": "_videoHash", 				"type": "uint256" 			} 		], 		"name": "uploadVideoData", 		"outputs": [], 		"payable": false, 		"stateMutability": "nonpayable", 		"type": "function" 	}, 	{ 		"constant": true, 		"inputs": [ 			{ 				"name": "_name", 				"type": "uint256" 			}, 			{ 				"name": "_hashToCompare", 				"type": "uint256" 			} 		], 		"name": "compareVideoData", 		"outputs": [ 			{ 				"name": "", 				"type": "bool" 			} 		], 		"payable": false, 		"stateMutability": "view", 		"type": "function" 	}, 	{ 		"constant": false, 		"inputs": [], 		"name": "renounceOwnership", 		"outputs": [], 		"payable": false, 		"stateMutability": "nonpayable", 		"type": "function" 	}, 	{ 		"constant": true, 		"inputs": [ 			{ 				"name": "", 				"type": "uint256" 			} 		], 		"name": "nameToVideo", 		"outputs": [ 			{ 				"name": "name", 				"type": "uint256" 			}, 			{ 				"name": "videoHash", 				"type": "uint256" 			} 		], 		"payable": false, 		"stateMutability": "view", 		"type": "function" 	}, 	{ 		"constant": true, 		"inputs": [], 		"name": "owner", 		"outputs": [ 			{ 				"name": "", 				"type": "address" 			} 		], 		"payable": false, 		"stateMutability": "view", 		"type": "function" 	}, 	{ 		"constant": true, 		"inputs": [ 			{ 				"name": "", 				"type": "uint256" 			} 		], 		"name": "videoList", 		"outputs": [ 			{ 				"name": "name", 				"type": "uint256" 			}, 			{ 				"name": "videoHash", 				"type": "uint256" 			} 		], 		"payable": false, 		"stateMutability": "view", 		"type": "function" 	}, 	{ 		"constant": true, 		"inputs": [ 			{ 				"name": "_name", 				"type": "uint256" 			} 		], 		"name": "getVideoData", 		"outputs": [ 			{ 				"name": "", 				"type": "uint256" 			} 		], 		"payable": false, 		"stateMutability": "view", 		"type": "function" 	}, 	{ 		"constant": false, 		"inputs": [ 			{ 				"name": "_newOwner", 				"type": "address" 			} 		], 		"name": "transferOwnership", 		"outputs": [], 		"payable": false, 		"stateMutability": "nonpayable", 		"type": "function" 	}, 	{ 		"inputs": [], 		"payable": false, 		"stateMutability": "nonpayable", 		"type": "constructor" 	}, 	{ 		"anonymous": false, 		"inputs": [ 			{ 				"indexed": true, 				"name": "previousOwner", 				"type": "address" 			} 		], 		"name": "OwnershipRenounced", 		"type": "event" 	}, 	{ 		"anonymous": false, 		"inputs": [ 			{ 				"indexed": true, 				"name": "previousOwner", 				"type": "address" 			}, 			{ 				"indexed": true, 				"name": "newOwner", 				"type": "address" 			} 		], 		"name": "OwnershipTransferred", 		"type": "event" 	} ]
 		, "0x20c556EDE272C51907526628F2EEF5F35257865C");
-	proofContract.methods.compareVideoData(fileName,comparehash).call().then(console.log);
+	var resultof;
+	proofContract.methods.getVideoData(fileName).call().then(function(result){
+		var hashonblockchain = result;
+		proofContract.methods.compareVideoData(fileName,comparehash).call().then(function(result){
+			console.log(result);
+			resultof = result;
+			res.json({
+				"yourHash": comparehash,
+				"result": resultof,
+				"hashfound": hashonblockchain,
+			});
+		});
+	});
 
 })
 
